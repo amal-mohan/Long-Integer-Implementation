@@ -49,26 +49,28 @@ public class Num  implements Comparable<Num> {
         StringBuilder result=new StringBuilder();
         long carry = 0;
         int j=0;
+        long []aArr=a.getArr();
+        long []bArr=b.getArr();
         while(j<minLength) {
-            result.append((carry + a.arr[j] + b.arr[j]) % a.base);
-            carry=result.charAt(j)/a.base;
+            result.append((carry + aArr[j] + bArr[j]) % a.base());
+            carry=result.charAt(j)/a.base();
             //resultArray[j] = (carry + a.arr[j] + b.arr[j]) % a.base;
             //carry = resultArray[j] / a.base;
             j++;
         }
         if(aLength>bLength){
             while(j<maxLength) {
-                result.append((a.arr[j]+carry)%a.base);
+                result.append((aArr[j]+carry)%a.base());
                 //resultArray[j]=(a.arr[j]+carry)%a.base;
-                carry=result.charAt(j)/a.base;
+                carry=result.charAt(j)/a.base();
                 j++;
             }
         }
         if(aLength<bLength){
             while(j<maxLength) {
-                result.append((b.arr[j]+carry)%a.base);
+                result.append((bArr[j]+carry)%a.base());
                 //resultArray[j]=(b.arr[j]+carry)%a.base;
-                carry=result.charAt(j)/a.base;
+                carry=result.charAt(j)/a.base();
                 j++;
             }
         }
@@ -87,44 +89,46 @@ public class Num  implements Comparable<Num> {
             res.makeNegative();
             return res;
         }
+        long []aArr=a.getArr();
+        long []bArr=b.getArr();
         boolean borrow=false;
         for(int i=0;i<b.getLen();i++) {
             if(borrow){
-                if(a.arr[i]-1<b.arr[i]){
-                    result.append(a.base()+a.arr[i]-1-b.arr[i]);
+                if(aArr[i]-1<bArr[i]){
+                    result.append(a.base()+aArr[i]-1-bArr[i]);
                 }
                 else{
-                    result.append(a.arr[i]-1-b.arr[i]);
+                    result.append(aArr[i]-1-bArr[i]);
                     borrow=false;
                 }
             }
-            else if(a.arr[i]<b.arr[i]){
-                result.append(a.base()+a.arr[i]-b.arr[i]);
+            else if(aArr[i]<bArr[i]){
+                result.append(a.base()+aArr[i]-bArr[i]);
                 borrow=true;
             }
             else {
-                result.append(a.arr[i]-b.arr[i]);
+                result.append(aArr[i]-bArr[i]);
             }
         }
         if(borrow) {
             //handling cases of adding extra unnecessary leading zero(eg 100-9)
-            if (a.getLen() > b.getLen() + 1 || a.arr[b.getLen()] > 1) {
-                if (a.arr[b.getLen()] != 0) {
-                    result.append(a.arr[b.getLen()] - 1);
+            if (a.getLen() > b.getLen() + 1 || aArr[b.getLen()] > 1) {
+                if (aArr[b.getLen()] != 0) {
+                    result.append(aArr[b.getLen()] - 1);
                 } else {
                     result.append(a.base());
                     borrow = true;
                 }
                 for (int i = b.getLen() + 1; i < a.getLen(); i++) {
                     if (borrow) {
-                        if (a.arr[i] != 0) {
-                            result.append(a.arr[i] - 1);
+                        if (aArr[i] != 0) {
+                            result.append(aArr[i] - 1);
                             borrow = false;
                         } else {
                             result.append(a.base());
                         }
                     } else {
-                        result.append(a.arr[i]);
+                        result.append(aArr[i]);
                     }
                 }
             }
@@ -180,6 +184,10 @@ public class Num  implements Comparable<Num> {
     // Return number equal to "this" number, in base=newBase
     public Num convertBase(int newBase) {
         return null;
+    }
+
+    public long[] getArr(){
+        return arr;
     }
 
     // Divide by 2, for using in binary search
