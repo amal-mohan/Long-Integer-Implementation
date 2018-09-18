@@ -43,7 +43,7 @@ public class Num  implements Comparable<Num> {
 
     public static Num add(Num a, Num b) {
         int aIndex = 0, bIndex = 0;
-        int aLength = a.len, bLength = b.len;
+        int aLength = a.getLen(), bLength = b.getLen();
         int minLength=aLength < bLength ? aLength  : bLength ;
         int maxLength=aLength >= bLength ? aLength  : bLength;
         StringBuilder result=new StringBuilder();
@@ -64,7 +64,7 @@ public class Num  implements Comparable<Num> {
                 j++;
             }
         }
-        while(bIndex < bLength) {
+        if(aLength<bLength){
             while(j<maxLength) {
                 result.append((b.arr[j]+carry)%a.base);
                 //resultArray[j]=(b.arr[j]+carry)%a.base;
@@ -76,12 +76,60 @@ public class Num  implements Comparable<Num> {
             result.append(carry);
             //resultArray[j]=carry;
         }
-        Num resultNum=new Num(result.toString());
+        Num resultNum=new Num(result.reverse().toString());
         return resultNum;
     }
 
     public static Num subtract(Num a, Num b) {
-        return null;
+        StringBuilder result=new StringBuilder();
+        if(a.getLen()==b.getLen() && b.compareTo(a)>0){
+            Num res=subtract(b,a);
+            res.makeNegative();
+            return res;
+        }
+        boolean borrow=false;
+        for(int i=0;i<b.getLen();i++) {
+            if(borrow){
+                if(a.arr[i]-1<b.arr[i]){
+                    result.append(a.base()+a.arr[i]-1-b.arr[i]);
+                }
+                else{
+                    result.append(a.arr[i]-1-b.arr[i]);
+                    borrow=false;
+                }
+            }
+            else if(a.arr[i]<b.arr[i]){
+                result.append(a.base()+a.arr[i]-b.arr[i]);
+                borrow=true;
+            }
+            else {
+                result.append(a.arr[i]-b.arr[i]);
+            }
+        }
+        if(borrow) {
+            //handling cases of adding extra unnecessary leading zero(eg 100-9)
+            if (a.getLen() > b.getLen() + 1 || a.arr[b.getLen()] > 1) {
+                if (a.arr[b.getLen()] != 0) {
+                    result.append(a.arr[b.getLen()] - 1);
+                } else {
+                    result.append(a.base());
+                    borrow = true;
+                }
+                for (int i = b.getLen() + 1; i < a.getLen(); i++) {
+                    if (borrow) {
+                        if (a.arr[i] != 0) {
+                            result.append(a.arr[i] - 1);
+                            borrow = false;
+                        } else {
+                            result.append(a.base());
+                        }
+                    } else {
+                        result.append(a.arr[i]);
+                    }
+                }
+            }
+        }
+        return new Num(result.reverse().toString());
     }
 
     public static Num product(Num a, Num b) {
@@ -151,6 +199,14 @@ public class Num  implements Comparable<Num> {
     // a number: [1-9][0-9]*.  There is no unary minus operator.
     public static Num evaluateInfix(String[] expr) {
         return null;
+    }
+
+    public void makeNegative(){
+        isNegative=true;
+    }
+
+    public int getLen(){
+        return len;
     }
 
 
