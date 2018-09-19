@@ -183,7 +183,10 @@ public class Num  implements Comparable<Num> {
 
     // return a%b
     public static Num mod(Num a, Num b) {
-        return null;
+        Num inter=divide(a,b);
+        Num prod=product(inter,b);
+        Num result=subtract(a,prod);
+        return result;
     }
 
     // Use binary search
@@ -219,7 +222,6 @@ public class Num  implements Comparable<Num> {
                     continue;
             }
         }
-        System.out.println("Reached");
         return result;
     }
 
@@ -294,7 +296,7 @@ public class Num  implements Comparable<Num> {
     public static void main(String[] args) {
         Num x = new Num(7);
         Num y = new Num("67");
-//        System.out.println(x.by2());
+ //       System.out.println(x.by2());
         Num f=product(x,y);
         for(long g:f.getArr()){
             System.out.println(g);
