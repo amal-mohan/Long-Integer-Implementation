@@ -5,8 +5,6 @@
 // Change following line to your NetId
 package LongInt;
 
-import com.sun.javafx.fxml.ParseTraceElement;
-
 public class Num  implements Comparable<Num> {
 
     static long defaultBase = 10;  // Change as needed
@@ -139,6 +137,32 @@ public class Num  implements Comparable<Num> {
     }
 
     public static Num product(Num a, Num b) {
+        long[] result=new long[a.getLen()+b.getLen()];
+        int counter=0,index=0;
+        long temp;
+        long resultValue;
+        long carry=0,addCarry=0;
+        for(long x:b.getArr()){
+            index=counter;
+            carry=0;
+            addCarry=0;
+            for(long y:a.getArr()){
+                temp=x*y+carry;//if the product exceeds the base? should implement addition as well
+                resultValue=result[index];
+                result[index]=(result[index]+(temp%a.base())+addCarry)%a.base();//does this addition causes overflow
+                carry=temp/a.base();
+                addCarry=(resultValue+(temp%a.base())+addCarry)/a.base();
+                index++;
+            }
+            if(carry>0){
+                result[index++]=(carry+addCarry)%a.base();
+                addCarry=(carry+addCarry)/a.base();
+            }
+            if(addCarry>0){
+                result[index]=addCarry;
+            }
+            counter++;
+        }
         return null;
     }
 
