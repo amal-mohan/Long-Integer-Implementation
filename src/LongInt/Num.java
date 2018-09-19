@@ -164,44 +164,32 @@ public class Num  implements Comparable<Num> {
     // Utility functions
     // compare "this" to "other": return +1 if this is greater, 0 if equal, -1 otherwise
     public int compareTo(Num other) {
+        int result = 0;
         if(other == null && other.getLen() == 0)
-            return this.isNegative ? -1 : 1;
+            result = this.isNegative ? -1 : 1;
         if(this.isNegative && !other.isNegative)
-            return -1;
+            result = -1;
         else if(!this.isNegative && other.isNegative)
-            return 1;
-        else if(this.isNegative && other.isNegative) {
-            int i;
-            if(this.getLen() < other.getLen())
-                return 1;
-            else if(this.getLen() > other.getLen())
-                return -1;
-            for(i = this.getLen()-1; i >= 0; i--) {
-                if(this.arr[i] == other.arr[i] && i == 0)
-                    return 0;
-                else if(this.arr[i] < other.arr[i])
-                    return 1;
-                else if(this.arr[i] > other.arr[i])
-                    return -1;
-            }
-        }
+            result = 1;
+        else if(this.getLen() < other.getLen())
+            result = this.isNegative ? 1 : -1;
+        else if(this.getLen() > other.getLen())
+            result = this.isNegative ? -1 : 1;
         else {
             int i;
-            if(this.getLen() > other.getLen())
-                return 1;
-            else if(this.getLen() < other.getLen())
-                return -1;
             for(i = this.getLen()-1; i >= 0; i--) {
-                if(this.arr[i] == other.arr[i] && i == 0)
-                    return 0;
-                else if(this.arr[i] < other.arr[i])
-                    return -1;
+                if(this.arr[i] < other.arr[i])
+                    result = this.isNegative ? 1 : -1;
                 else if(this.arr[i] > other.arr[i])
-                    return 1;
+                    result = this.isNegative ? -1 : 1;
+                else if(this.arr[i] == other.arr[i] && i == 0)
+                    result = 0;
+                else
+                    continue;
             }
         }
         System.out.println("Reached");
-        return 0;
+        return result;
     }
 
     // Output using the format "base: elements of list ..."
@@ -258,7 +246,7 @@ public class Num  implements Comparable<Num> {
     public static void main(String[] args) {
         Num x = new Num(999);
         Num y = new Num("8");
-        System.out.println(new Num("1000").compareTo(new Num("-1001")));
+        System.out.println(new Num("1").compareTo(new Num("-1")));
         Num z = Num.add(x, y);
         System.out.println(z);
         Num a = Num.power(x, 8);
