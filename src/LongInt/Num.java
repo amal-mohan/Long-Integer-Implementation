@@ -173,7 +173,16 @@ public class Num  implements Comparable<Num> {
 
     // Use divide and conquer
     public static Num power(Num a, long n) {
-        return null;
+        if(n==0){
+            return new Num(1);
+        }
+        Num intermediate=power(a,n/2);
+        if(n%2==0){
+            return product(intermediate,intermediate);
+        }
+        else {
+            return product(a,product(intermediate,intermediate));
+        }
     }
 
     // Use binary search to calculate a/b
