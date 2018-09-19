@@ -147,7 +147,8 @@ public class Num  implements Comparable<Num> {
             carry=0;
             addCarry=0;
             for(long y:a.getArr()){
-                temp=x*y+carry;//if the product exceeds the base? should implement addition as well
+                temp=x*y+carry;//if the product exceeds the base? should implement addition with base as well as well?
+                //temp=convertNumberBase(temp,a.base());//check if required
                 resultValue=result[index];
                 result[index]=(result[index]+(temp%a.base())+addCarry)%a.base();//does this addition causes overflow
                 carry=temp/a.base();
@@ -163,7 +164,11 @@ public class Num  implements Comparable<Num> {
             }
             counter++;
         }
-        return null;
+        StringBuilder s=new StringBuilder();
+        for(long x:result){
+            s.append(x);
+        }
+        return new Num(s.toString());
     }
 
     // Use divide and conquer
@@ -287,10 +292,14 @@ public class Num  implements Comparable<Num> {
 
 
     public static void main(String[] args) {
-        Num x = new Num(999);
-        Num y = new Num("8");
+        Num x = new Num(7);
+        Num y = new Num("67");
 //        System.out.println(x.by2());
-        System.out.println(y.by2());
+        Num f=product(x,y);
+        for(long g:f.getArr()){
+            System.out.println(g);
+        }
+//        System.out.println(y.by2());
         System.out.println(new Num("1").compareTo(new Num("-1")));
         Num z = Num.add(x, y);
         System.out.println(z);
