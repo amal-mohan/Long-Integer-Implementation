@@ -5,6 +5,8 @@
 // Change following line to your NetId
 package LongInt;
 
+import com.sun.javafx.fxml.ParseTraceElement;
+
 public class Num  implements Comparable<Num> {
 
     static long defaultBase = 10;  // Change as needed
@@ -216,8 +218,25 @@ public class Num  implements Comparable<Num> {
     }
 
     // Divide by 2, for using in binary search
+    /*Basically the code doesn't work yet but the idea is to divide each term of the array by 2
+     * If a[i] < 2 then there will be a carry such that (carry*base)+a[i+1] is divided in the next cycle
+     * The array is then returned in the Num type
+     * i forgot to consider input array in reverse order*/
     public Num by2() {
-        return null;
+    	StringBuilder result = new StringBuilder();
+    	int i = 0;
+    	long carry = 0;
+    	while(i < arr.length) {
+    		if(this.arr[i] > 2) {
+    			result.append(this.arr[i]/2);
+    			carry = this.arr[i] % 2;
+    		}
+    		else {
+    			result.append((carry*base+arr[i])/2);
+    		}
+    	}
+    	System.out.println(result);
+        return new Num(result.reverse().toString());
     }
 
     // Evaluate an expression in postfix and return resulting number
@@ -246,6 +265,8 @@ public class Num  implements Comparable<Num> {
     public static void main(String[] args) {
         Num x = new Num(999);
         Num y = new Num("8");
+//        System.out.println(x.by2());
+        System.out.println(y.by2());
         System.out.println(new Num("1").compareTo(new Num("-1")));
         Num z = Num.add(x, y);
         System.out.println(z);
