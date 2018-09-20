@@ -23,9 +23,6 @@ public class Num implements Comparable<Num> {
 		for (int i = strLen - 1; i >= 0; i--)
 			if (s.charAt(i) != '-')
 				arr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
-		
-		  for(int i=0; i < strLen; i++) System.out.print(arr[i] + " ");
-		 
 	}
 
 	public Num(long x) {
@@ -265,22 +262,24 @@ public class Num implements Comparable<Num> {
 	public Num by2() {
 		long[] result = new long[arr.length];
 		long carry = 0;
-		int count = 0;
-		for (int i = arr.length - 1; i >= 0; i--, count++) {
-			result[count] = ((carry * this.base()) + arr[i]) / 2;
+		//int count = 0;
+		for (int i = arr.length - 1; i >= 0; i--) {
+			result[arr.length-1-i] = ((carry * this.base()) + arr[i]) / 2;
 			carry = arr[i] % 2;
 		}
 
 		StringBuilder s = new StringBuilder();
 		for (long x : result) {
-			if(x != 0)
+			/*if(x != 0)
 				s.append(x);
 			else
-				continue;
+				continue;*/
+			s.append(x);
 		}
-		
-		System.out.println(s);
-		return new Num(s.toString());
+		String str = s.toString();
+        str = str.charAt(0) == '0' ? str.substring(1, str.length()) : str;
+		System.out.println(str);
+		return new Num(str);
 	}
 
 	// Evaluate an expression in postfix and return resulting number
@@ -306,9 +305,10 @@ public class Num implements Comparable<Num> {
 	}
 
 	public static void main(String[] args) {
-		Num x = new Num(128);
+		Num x = new Num("2000");
+		x.by2();
 //		Num y = new Num("67");
-		 System.out.println(x.by2());
+		 //System.out.println(x.by2());
 //		Num f = product(x, y);
 //		for (long g : f.getArr()) {
 //			System.out.println(g);
