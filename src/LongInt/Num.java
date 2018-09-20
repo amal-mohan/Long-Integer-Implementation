@@ -15,30 +15,33 @@ public class Num implements Comparable<Num> {
 				// arr[0..len-1]
 
 	public Num(String s) {
+		s = s.trim();
 		this.isNegative = s.charAt(0) == '-';
+		s = this.isNegative ? s.substring(1) : s;
+		while(true) {
+			if(s.charAt(0) == '0')
+				s = s.substring(1);
+			else
+				break;
+		}
 		int strLen = s.length();
-		this.len = 0;
-		this.len = this.isNegative ? strLen - 1 : strLen;
+		this.len = strLen;
 		this.arr = new long[len];
-		for (int i = strLen - 1; i >= 0; i--)
-			if (s.charAt(i) != '-')
-				arr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
+		for(int i = strLen - 1; i >= 0 && strLen-1-i >=0 ; i--)
+			arr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
 	}
 
 	public Num(long x) {
 		this.isNegative = x < 0;
 		int index = 0;
 		this.len = 0;
-		while ((long) Math.pow(10, this.len) < x)
+		while ((long) Math.pow(10, this.len) <= x)
 			this.len = this.len + 1;
 		this.arr = new long[this.len];
 		while (x > 0) {
 			this.arr[index++] = x % base;
-			x = x / base;
+			x /= base;
 		}
-		/*
-		 * for(int i=0; i < arr.length; i++) System.out.print(arr[i] + " ");
-		 */
 	}
 
 	public static Num add(Num a, Num b) {
@@ -241,7 +244,17 @@ public class Num implements Comparable<Num> {
 
 	// Return number to a string in base 10
 	public String toString() {
-		return null;
+		StringBuilder sbResult = new StringBuilder();
+		for(long i: this.arr) {
+			sbResult = sbResult.append(i);
+		}
+		String result = this.toString(sbResult.reverse().toString());
+		return result;
+	}
+
+	private String toString(String val) {
+		val = val.charAt(0) == '0' ? val.substring(1) : val;
+		return this.isNegative ? "-" + val : val;
 	}
 
 	public long base() {
@@ -260,26 +273,27 @@ public class Num implements Comparable<Num> {
 	// Divide by 2, for using in binary search
 
 	public Num by2() {
-		long[] result = new long[arr.length];
+		StringBuilder sbResult = new StringBuilder();
 		long carry = 0;
-		//int count = 0;
-		for (int i = arr.length - 1; i >= 0; i--) {
-			result[arr.length-1-i] = ((carry * this.base()) + arr[i]) / 2;
+		for(int i=this.getLen()-1; i>=0; i--) {
+			sbResult.append(((carry * this.base()) + arr[i]) / 2);
 			carry = arr[i] % 2;
 		}
-
-		StringBuilder s = new StringBuilder();
-		for (long x : result) {
-			/*if(x != 0)
-				s.append(x);
-			else
-				continue;*/
-			s.append(x);
+		String strResult = this.toString(sbResult.toString());
+		System.out.println(strResult);
+		/*long[] result = new long[this.len];
+		//long carry = 0;
+		for (int i = this.len - 1; i >= 0; i--) {
+			result[this.len-1-i] = ((carry * this.base()) + arr[i]) / 2;
+			carry = arr[i] % 2;
 		}
+		StringBuilder s = new StringBuilder();
+		for (long x : result)
+			s.append(x);
 		String str = s.toString();
-        str = str.charAt(0) == '0' ? str.substring(1, str.length()) : str;
-		System.out.println(str);
-		return new Num(str);
+        str = str.charAt(0) == '0' ? str.substring(1) : str;
+		System.out.println(str);*/
+		return new Num(strResult);
 	}
 
 	// Evaluate an expression in postfix and return resulting number
@@ -304,22 +318,27 @@ public class Num implements Comparable<Num> {
 		return this.len;
 	}
 
-	public static void main(String[] args) {
-		Num x = new Num("2000");
+	public void printMethod() {
+		Num x = new Num(" -0001000000000000000000");
+		Num y = new Num(1000000000);
+		System.out.println("Compare x and y");
+		System.out.println(x.compareTo(y));
+		System.out.println("ToString x and y");
+		System.out.println(x.toString());
+		System.out.println(y.toString());
+		System.out.println("By2 of x and y");
 		x.by2();
-//		Num y = new Num("67");
-		 //System.out.println(x.by2());
-//		Num f = product(x, y);
-//		for (long g : f.getArr()) {
-//			System.out.println(g);
-//		}
-//		// System.out.println(y.by2());
-//		System.out.println(new Num("1").compareTo(new Num("-1")));
-//		Num z = Num.add(x, y);
-//		System.out.println(z);
-//		Num a = Num.power(x, 8);
-//		System.out.println(a);
-//		if (z != null)
-//			z.printList();
+		y.by2();
+	}
+
+	public static void main(String[] args) {
+		/*Num x = new Num(2000);
+		Num y = new Num("-67");
+		System.out.println(new Num("1").compareTo(new Num("-1")));
+		Num z = Num.add(x, y);
+		System.out.println(z);
+		if (z != null)
+			z.printList();*/
+		new Num("123").printMethod();
 	}
 }
