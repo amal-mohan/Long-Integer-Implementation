@@ -300,7 +300,39 @@ public class Num implements Comparable<Num> {
 	// Each string is one of: "*", "+", "-", "/", "%", "^", "0", or
 	// a number: [1-9][0-9]*. There is no unary minus operator.
 	public static Num evaluatePostfix(String[] expr) {
-		return null;
+		HashSet<String> operator=new HashSet<>(Arrays.asList("+","*","-","/","%","^"));
+		Stack<String> operands=new Stack<>();
+		for(String op:expr){
+			if(operator.contains(op)){
+				if(operands.isEmpty()){
+					return null;
+				}
+				String n2=operands.pop();
+				if(operands.isEmpty()) {
+					return null;
+				}
+				String n1=operands.pop();
+				switch (op){
+					case "+":operands.push(add(new Num(n1),new Num(n2)).toString());
+						break;
+					case "*":operands.push(product(new Num(n1),new Num(n2)).toString());
+						break;
+					case "-":operands.push(subtract(new Num(n1),new Num(n2)).toString());
+						break;
+					case "/":operands.push(divide(new Num(n1),new Num(n2)).toString());
+						break;
+					case "%":operands.push(mod(new Num(n1),new Num(n2)).toString());
+						break;
+					case "^":operands.push(power(new Num(n1),Long.parseLong(n2)).toString());
+						break;
+				}
+			}
+		}
+		if(operands.length()>1){
+			return null;
+		}
+		return operands.pop();
+
 	}
 
 	// Evaluate an expression in infix and return resulting number
