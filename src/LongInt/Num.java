@@ -7,6 +7,7 @@ package LongInt;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Stack;
 
 public class Num implements Comparable<Num> {
@@ -33,6 +34,7 @@ public class Num implements Comparable<Num> {
 		this.arr = new long[len];
 		for (int i = strLen - 1; i >= 0 && strLen - 1 - i >= 0; i--)
 			arr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
+
 	}
 
 	public Num(long x) {
@@ -368,8 +370,57 @@ public class Num implements Comparable<Num> {
 	// Each string is one of: "*", "+", "-", "/", "%", "^", "(", ")", "0", or
 	// a number: [1-9][0-9]*. There is no unary minus operator.
 	public static Num evaluateInfix(String[] expr) {
-		return null;
+		Stack<String> stack=new Stack<>();
+		String[] queue=new String[expr.length];
+		HashMap<String,Integer> precedenceMap=new HashMap<String, Integer>();
+		precedenceMap.put("^",1);
+		precedenceMap.put("*",2);
+		precedenceMap.put("/",2);
+		precedenceMap.put("%",2);
+		precedenceMap.put("+",3);
+		precedenceMap.put("-",3);
+
+		int i=0;
+		for(String op:expr) {
+			if (op.matches("-?\\d+")) {
+				queue[i++] = op;
+			} else {
+				if (stack.isEmpty() || op.equals("(")) {
+					stack.push(op);
+				} else if (op.equals(")")) {
+					String tos = stack.pop();
+					while (tos.equals('(') == false) {
+						queue[i++] = tos;
+						if (stack.isEmpty()) {
+							return null;
+						}
+						tos = stack.pop();
+					}
+				} else {
+					while (isHigherPrecedence(op, stack.peek(),precedenceMap)) {
+						String tos = stack.pop();
+						queue[i++] = tos;
+						if (stack.isEmpty()) {
+							break;
+						}
+					}
+					stack.push(op);
+				}
+			}
+		}
+		while(!stack.isEmpty()){
+			queue[i++]=stack.pop();
+		}
+		return evaluatePostfix(queue);
 	}
+
+	private static boolean isHigherPrecedence(String a, String b,HashMap<String,Integer> precedenceMap) {
+		if(precedenceMap.get(a)>precedenceMap.get(b)){
+			return true;
+		}
+		return false;
+	}
+
 
 	public void makeNegative() {
 		this.isNegative = true;
