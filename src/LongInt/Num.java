@@ -5,6 +5,10 @@
 // Change following line to your NetId
 package LongInt;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Stack;
+
 public class Num implements Comparable<Num> {
 
 	static long defaultBase = 10; // Change as needed
@@ -18,8 +22,8 @@ public class Num implements Comparable<Num> {
 		s = s.trim();
 		this.isNegative = s.charAt(0) == '-';
 		s = this.isNegative ? s.substring(1) : s;
-		while(true) {
-			if(s.charAt(0) == '0')
+		while (true) {
+			if (s.charAt(0) == '0')
 				s = s.substring(1);
 			else
 				break;
@@ -27,7 +31,7 @@ public class Num implements Comparable<Num> {
 		int strLen = s.length();
 		this.len = strLen;
 		this.arr = new long[len];
-		for(int i = strLen - 1; i >= 0 && strLen-1-i >=0 ; i--)
+		for (int i = strLen - 1; i >= 0 && strLen - 1 - i >= 0; i--)
 			arr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
 	}
 
@@ -186,8 +190,32 @@ public class Num implements Comparable<Num> {
 		}
 	}
 
+	// compare "this" to "other": return +1 if this is greater, 0 if equal, -1
+	// otherwise
 	// Use binary search to calculate a/b
 	public static Num divide(Num a, Num b) {
+		Num current = a.by2();
+		Num prod = product(current, b);
+
+		if (a.compareTo(b) < 0)
+			return new Num((long) 0);
+		else if (a.compareTo(b) == 0)
+			return new Num((long) 1);
+		else {
+			//if (a/2 * b) == number then a/2 is quotient
+			if (prod.compareTo(a) == 0) {
+				return new Num(current.toString());
+			}
+			//if (a/2 *b) > a then further divide a/2 in half * b and repeat
+			else if (prod.compareTo(a) > 0) {
+				divide(current, b);
+			}
+			//if (1/2 *b) < a then increment a/2 and divide till new a/2 *b !> a
+			else {
+				//implementation left
+			}
+		}
+
 		return null;
 	}
 
@@ -245,7 +273,7 @@ public class Num implements Comparable<Num> {
 	// Return number to a string in base 10
 	public String toString() {
 		StringBuilder sbResult = new StringBuilder();
-		for(long i: this.arr) {
+		for (long i : this.arr) {
 			sbResult = sbResult.append(i);
 		}
 		String result = this.toString(sbResult.reverse().toString());
@@ -275,24 +303,19 @@ public class Num implements Comparable<Num> {
 	public Num by2() {
 		StringBuilder sbResult = new StringBuilder();
 		long carry = 0;
-		for(int i=this.getLen()-1; i>=0; i--) {
+		for (int i = this.getLen() - 1; i >= 0; i--) {
 			sbResult.append(((carry * this.base()) + arr[i]) / 2);
 			carry = arr[i] % 2;
 		}
 		String strResult = this.toString(sbResult.toString());
 		System.out.println(strResult);
-		/*long[] result = new long[this.len];
-		//long carry = 0;
-		for (int i = this.len - 1; i >= 0; i--) {
-			result[this.len-1-i] = ((carry * this.base()) + arr[i]) / 2;
-			carry = arr[i] % 2;
-		}
-		StringBuilder s = new StringBuilder();
-		for (long x : result)
-			s.append(x);
-		String str = s.toString();
-        str = str.charAt(0) == '0' ? str.substring(1) : str;
-		System.out.println(str);*/
+		/*
+		 * long[] result = new long[this.len]; //long carry = 0; for (int i = this.len -
+		 * 1; i >= 0; i--) { result[this.len-1-i] = ((carry * this.base()) + arr[i]) /
+		 * 2; carry = arr[i] % 2; } StringBuilder s = new StringBuilder(); for (long x :
+		 * result) s.append(x); String str = s.toString(); str = str.charAt(0) == '0' ?
+		 * str.substring(1) : str; System.out.println(str);
+		 */
 		return new Num(strResult);
 	}
 
@@ -300,35 +323,41 @@ public class Num implements Comparable<Num> {
 	// Each string is one of: "*", "+", "-", "/", "%", "^", "0", or
 	// a number: [1-9][0-9]*. There is no unary minus operator.
 	public static Num evaluatePostfix(String[] expr) {
-		HashSet<String> operator=new HashSet<>(Arrays.asList("+","*","-","/","%","^"));
-		Stack<String> operands=new Stack<>();
-		for(String op:expr){
-			if(operator.contains(op)){
-				if(operands.isEmpty()){
+		HashSet<String> operator = new HashSet<>(Arrays.asList("+", "*", "-", "/", "%", "^"));
+		Stack<String> operands = new Stack<>();
+		for (String op : expr) {
+			if (operator.contains(op)) {
+				if (operands.isEmpty()) {
 					return null;
 				}
-				String n2=operands.pop();
-				if(operands.isEmpty()) {
+				String n2 = operands.pop();
+				if (operands.isEmpty()) {
 					return null;
 				}
-				String n1=operands.pop();
-				switch (op){
-					case "+":operands.push(add(new Num(n1),new Num(n2)).toString());
-						break;
-					case "*":operands.push(product(new Num(n1),new Num(n2)).toString());
-						break;
-					case "-":operands.push(subtract(new Num(n1),new Num(n2)).toString());
-						break;
-					case "/":operands.push(divide(new Num(n1),new Num(n2)).toString());
-						break;
-					case "%":operands.push(mod(new Num(n1),new Num(n2)).toString());
-						break;
-					case "^":operands.push(power(new Num(n1),Long.parseLong(n2)).toString());
-						break;
+				String n1 = operands.pop();
+				switch (op) {
+				case "+":
+					operands.push(add(new Num(n1), new Num(n2)).toString());
+					break;
+				case "*":
+					operands.push(product(new Num(n1), new Num(n2)).toString());
+					break;
+				case "-":
+					operands.push(subtract(new Num(n1), new Num(n2)).toString());
+					break;
+				case "/":
+					operands.push(divide(new Num(n1), new Num(n2)).toString());
+					break;
+				case "%":
+					operands.push(mod(new Num(n1), new Num(n2)).toString());
+					break;
+				case "^":
+					operands.push(power(new Num(n1), Long.parseLong(n2)).toString());
+					break;
 				}
 			}
 		}
-		if(operands.length()>1){
+		if (operands.length() > 1) {
 			return null;
 		}
 		return operands.pop();
@@ -364,13 +393,11 @@ public class Num implements Comparable<Num> {
 	}
 
 	public static void main(String[] args) {
-		/*Num x = new Num(2000);
-		Num y = new Num("-67");
-		System.out.println(new Num("1").compareTo(new Num("-1")));
-		Num z = Num.add(x, y);
-		System.out.println(z);
-		if (z != null)
-			z.printList();*/
+		/*
+		 * Num x = new Num(2000); Num y = new Num("-67"); System.out.println(new
+		 * Num("1").compareTo(new Num("-1"))); Num z = Num.add(x, y);
+		 * System.out.println(z); if (z != null) z.printList();
+		 */
 		new Num("123").printMethod();
 	}
 }
