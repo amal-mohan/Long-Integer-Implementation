@@ -1,9 +1,13 @@
-
 // Starter code for lp1.
 // Version 1.0 (8:00 PM, Wed, Sep 5).
 
 // Change following line to your NetId
 package LongInt;
+
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.NoSuchElementException;
 
 public class Num implements Comparable<Num> {
 
@@ -15,6 +19,13 @@ public class Num implements Comparable<Num> {
 				// arr[0..len-1]
 
 	public Num(String s) {
+		if(s == null || s == "")
+			throw new NoSuchElementException();
+		String pattern = "(-)?[a-zA-Z]";
+		Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(s);
+		if(m.find())
+			throw new NoSuchElementException();
 		s = s.trim();
 		this.isNegative = s.charAt(0) == '-';
 		s = this.isNegative ? s.substring(1) : s;
@@ -25,10 +36,21 @@ public class Num implements Comparable<Num> {
 				break;
 		}
 		int strLen = s.length();
-		this.len = strLen;
-		this.arr = new long[len];
+		long[] tempArr = new long[strLen];
+		for(int i = strLen - 1; i >= 0 && strLen-1-i >=0 ; i--)
+			tempArr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
+		this.len = this.base() == 10 ? strLen : newBaseLength(strLen);
+		if(this.len == strLen)
+			this.arr = tempArr;
+		else {
+			this.arr = new long[len];
+		}
 		for(int i = strLen - 1; i >= 0 && strLen-1-i >=0 ; i--)
 			arr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
+	}
+
+	private int newBaseLength(int currLength) {
+		return (int)((currLength+1) * Math.log(10)/Math.log(this.base())) + 1;
 	}
 
 	public Num(long x) {
@@ -328,10 +350,10 @@ public class Num implements Comparable<Num> {
 				}
 			}
 		}
-		if(operands.length()>1){
+		if(operands.capacity()>1){
 			return null;
 		}
-		return operands.pop();
+		return new Num(operands.pop());
 
 	}
 
