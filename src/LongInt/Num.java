@@ -597,11 +597,22 @@ public class Num implements Comparable<Num> {
 	}
 
 	public static void main(String[] args) {
+		Num x = new Num(36);
+		Num y = new Num(5);
+		Num z = divide(x, y);
+		System.out.println(z);
+
 		/*
 		 * Num x = new Num(2000); Num y = new Num("-67"); System.out.println(new
 		 * Num("1").compareTo(new Num("-1"))); Num z = Num.add(x, y);
 		 * System.out.println(z); if (z != null) z.printList();
 		 */
+		// new Num("123").printMethod();
+		// System.out.println("ds");
+		// System.out.println(new Num(25).compareTo(new Num(81)));
+		// product(new Num(40),new Num(40)).printMethod();
+		// Num res=new Num(0);
+		// squareRoot(new Num(82));
 		long [] a={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
 		long []b={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
 		Num s=product(new Num(a,5),new Num(b,5));
