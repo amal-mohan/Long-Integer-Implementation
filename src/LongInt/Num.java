@@ -76,6 +76,7 @@ public class Num implements Comparable<Num> {
 	public Num(long[] x,long base){
 		arr=x;
 		this.base=base;
+		len=x.length;
 	}
 
 	public Num(long x, long newBase) {
@@ -601,6 +602,9 @@ public class Num implements Comparable<Num> {
 		 * Num("1").compareTo(new Num("-1"))); Num z = Num.add(x, y);
 		 * System.out.println(z); if (z != null) z.printList();
 		 */
+		long [] a={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
+		long []b={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
+		Num s=product(new Num(a,5),new Num(b,5));
 		new Num("123").printMethod();
 		System.out.println("ds");
 		System.out.println(new Num(25).compareTo(new Num(81)));
