@@ -34,7 +34,7 @@ public class Num implements Comparable<Num> {
 		this.isNegative = s.charAt(0) == '-';
 		s = this.isNegative ? s.substring(1) : s;
 		while (true) {
-			if (s.charAt(0) == '0')
+			if (s.charAt(0) == '0' && !s.equals("0"))
 				s = s.substring(1);
 			else
 				break;
@@ -64,7 +64,7 @@ public class Num implements Comparable<Num> {
 		this.isNegative = x < 0;
 		int index = 0;
 		this.len = 0;
-		while ((long) Math.pow(10, this.len) <= x)
+		while ((long) Math.pow(10, this.len) <= x)//fix for x=0
 			this.len = this.len + 1;
 		this.arr = new long[this.len];
 		while (x > 0) {
@@ -85,7 +85,7 @@ public class Num implements Comparable<Num> {
 		long[] bArr = b.getArr();
 		while (j < minLength) {
 			result.append((carry + aArr[j] + bArr[j]) % a.base());
-			carry = result.charAt(j) / a.base();
+			carry = (carry + aArr[j] + bArr[j]) / a.base();
 			// resultArray[j] = (carry + a.arr[j] + b.arr[j]) % a.base;
 			// carry = resultArray[j] / a.base;
 			j++;
@@ -94,7 +94,7 @@ public class Num implements Comparable<Num> {
 			while (j < maxLength) {
 				result.append((aArr[j] + carry) % a.base());
 				// resultArray[j]=(a.arr[j]+carry)%a.base;
-				carry = result.charAt(j) / a.base();
+				carry = ((aArr[j] + carry) % a.base()) / a.base();
 				j++;
 			}
 		}
@@ -102,7 +102,7 @@ public class Num implements Comparable<Num> {
 			while (j < maxLength) {
 				result.append((bArr[j] + carry) % a.base());
 				// resultArray[j]=(b.arr[j]+carry)%a.base;
-				carry = result.charAt(j) / a.base();
+				carry = ((bArr[j] + carry) % a.base()) / a.base();
 				j++;
 			}
 		}
@@ -199,7 +199,7 @@ public class Num implements Comparable<Num> {
 		for (long x : result) {
 			s.append(x);
 		}
-		return new Num(s.toString());
+		return new Num(s.reverse().toString());
 	}
 
 	// Use divide and conquer
@@ -221,7 +221,7 @@ public class Num implements Comparable<Num> {
 	public static Num divide(Num a, Num b) {
 		Num current = a.by2();
 		Num prod = product(current, b);
-
+		Num ans;
 		if (a.compareTo(b) < 0)
 			return new Num((long) 0);
 		else if (a.compareTo(b) == 0)
@@ -254,7 +254,31 @@ public class Num implements Comparable<Num> {
 
 	// Use binary search
 	public static Num squareRoot(Num a) {
-		return null;
+		Num low=new Num("0");
+		Num  high=new Num(a.toString());
+		Num res=new Num("0");
+		Num midSquare;
+		Num mid;
+		Num prevmid;
+		while (low.compareTo(high)<0){
+			mid=add(low,high).by2();
+			if(mid.compareTo(low)==0){
+				break;
+			}
+			midSquare=product(mid,mid);
+			int compareResult=midSquare.compareTo(a);
+			if(compareResult==0){
+				return mid;
+			}
+			else if(compareResult<0){
+				low=mid;
+				res=mid;
+			}
+			else{
+				high=mid;
+			}
+		}
+		return res;
 	}
 
 	// Utility functions
@@ -275,14 +299,18 @@ public class Num implements Comparable<Num> {
 		else {
 			int i;
 			for (i = this.getLen() - 1; i >= 0; i--) {
-				if (this.arr[i] < other.arr[i])
+				if (this.arr[i] < other.arr[i]) {
 					result = this.isNegative ? 1 : -1;
-				else if (this.arr[i] > other.arr[i])
+					break;
+				}
+				else if (this.arr[i] > other.arr[i]) {
 					result = this.isNegative ? -1 : 1;
-				else if (this.arr[i] == other.arr[i] && i == 0)
+					break;
+				}
+				else if (this.arr[i] == other.arr[i] && i == 0) {
 					result = 0;
-				else
-					continue;
+					break;
+				}
 			}
 		}
 		return result;
@@ -474,5 +502,10 @@ public class Num implements Comparable<Num> {
 		 * System.out.println(z); if (z != null) z.printList();
 		 */
 		new Num("123").printMethod();
+		System.out.println("ds");
+		System.out.println(new Num(25).compareTo(new Num(81)));
+		product(new Num(40),new Num(40)).printMethod();
+		Num res=new Num(0);
+		squareRoot(new Num(82));
 	}
 }
