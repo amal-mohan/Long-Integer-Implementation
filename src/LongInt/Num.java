@@ -8,10 +8,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.NoSuchElementException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Stack;
 
 public class Num implements Comparable<Num> {
 
@@ -33,6 +29,12 @@ public class Num implements Comparable<Num> {
 		s = s.trim();
 		this.isNegative = s.charAt(0) == '-';
 		s = this.isNegative ? s.substring(1) : s;
+		if(s.matches("0*")) {
+			this.len = 1;
+			this.arr = new long[this.len];
+			this.arr[0] = 0;
+			return;
+		}
 		while (true) {
 			if (s.charAt(0) == '0' && !s.equals("0"))
 				s = s.substring(1);
@@ -46,31 +48,54 @@ public class Num implements Comparable<Num> {
 		this.len = this.base() == 10 ? strLen : newBaseLength(strLen);
 		if(this.len == strLen)
 			this.arr = tempArr;
-		else {
-			this.arr = new long[len];
-		}
-		this.len = strLen;
-		this.arr = new long[len];
-		for (int i = strLen - 1; i >= 0 && strLen - 1 - i >= 0; i--)
-			arr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
-
-	}
-
-	private int newBaseLength(int currLength) {
-		return (int)((currLength+1) * Math.log(10)/Math.log(this.base())) + 1;
+		else
+			this.arr = new long[this.len];
 	}
 
 	public Num(long x) {
 		this.isNegative = x < 0;
-		int index = 0;
 		this.len = 0;
-		while ((long) Math.pow(10, this.len) <= x)//fix for x=0
-			this.len = this.len + 1;
-		this.arr = new long[this.len];
-		while (x > 0) {
-			this.arr[index++] = x % base;
-			x /= base;
+		this.base = 10;
+		if(x != 0) {
+			int index = 0;
+			while ((long) Math.pow(10, this.len) <= x)
+				this.len = this.len + 1;
+			this.arr = new long[this.len];
+			while (x != 0) {
+				this.arr[index++] = x % base;
+				x /= base;
+			}
 		}
+		else {
+			this.len = 1;
+			this.arr = new long[this.len];
+			this.arr[0] = 0;
+		}
+	}
+
+	public Num(long x, long newBase) {
+		this.isNegative = x < 0;
+		this.base = newBase;
+		this.len = 0;
+		if(x != 0) {
+			int index = 0;
+			while ((long) Math.pow(10, this.len) <= x)
+				this.len = this.len + 1;
+			this.arr = new long[this.len];
+			while (x != 0) {
+				this.arr[index++] = x % newBase;
+				x /= newBase;
+			}
+		}
+		else {
+			this.len = 1;
+			this.arr = new long[this.len];
+			this.arr[0] = 0;
+		}
+	}
+
+	private int newBaseLength(int currLength) {
+		return (int)((currLength+1) * Math.log(10)/Math.log(this.base())) + 1;
 	}
 
 	public static Num add(Num a, Num b) {
@@ -344,7 +369,12 @@ public class Num implements Comparable<Num> {
 
 	// Return number equal to "this" number, in base=newBase
 	public Num convertBase(int newBase) {
-		return null;
+		Num sum = new Num("0");
+		Num baseInNewBase = new Num(this.base(), newBase);
+		for(int i=0;i<this.getLen();i++) {
+			sum = add(product(sum, baseInNewBase), new Num(this.arr[i], newBase));
+		}
+		return sum;
 	}
 
 	public long[] getArr() {
@@ -491,6 +521,8 @@ public class Num implements Comparable<Num> {
 		System.out.println(x.toString());
 		System.out.println(y.toString());
 		System.out.println("By2 of x and y");
+		Num z = new Num("1500");
+		System.out.println(z.convertBase(7).toString());
 		x.by2();
 		y.by2();
 	}
