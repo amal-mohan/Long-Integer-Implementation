@@ -104,6 +104,16 @@ public class Num implements Comparable<Num> {
 		int minLength = aLength < bLength ? aLength : bLength;
 		int maxLength = aLength >= bLength ? aLength : bLength;
 		StringBuilder result = new StringBuilder();
+		if(a.isNegative==true&&b.isNegative!=true){
+			Num c=new Num(a.toString());
+			c.isNegative=false;
+			return subtract(b,c);
+		}
+		else if(b.isNegative==true){
+			Num c=new Num(b.toString());
+			c.isNegative=false;
+			return subtract(a,c);
+		}
 		long carry = 0;
 		int j = 0;
 		long[] aArr = a.getArr();
@@ -135,13 +145,33 @@ public class Num implements Comparable<Num> {
 			result.append(carry);
 			// resultArray[j]=carry;
 		}
+		if(a.isNegative==true&&b.isNegative==true){
+			result.append("-");
+		}
 		Num resultNum = new Num(result.reverse().toString());
 		return resultNum;
 	}
 
 	public static Num subtract(Num a, Num b) {
 		StringBuilder result = new StringBuilder();
-		if (a.getLen() == b.getLen() && b.compareTo(a) > 0) {
+		if(a.isNegative&&b.isNegative){
+			Num c=new Num(b.toString());
+			c.isNegative=false;
+			Num d=new Num(a.toString());
+			d.isNegative=false;
+			subtract(c,d);
+		}
+		if(b.isNegative){
+			Num c=new Num(b.toString());
+			c.isNegative=false;
+			return add(a,c);
+		}
+		if(a.isNegative){
+			Num c=new Num(b.toString());
+			c.isNegative=true;
+			return add(a,c);
+		}
+		if (b.compareTo(a) > 0) {
 			Num res = subtract(b, a);
 			res.makeNegative();
 			return res;
@@ -224,6 +254,9 @@ public class Num implements Comparable<Num> {
 		for (long x : result) {
 			s.append(x);
 		}
+		if(a.isNegative!=b.isNegative){
+			s.append("-");
+		}//implement same in divide
 		return new Num(s.reverse().toString());
 	}
 
@@ -345,7 +378,13 @@ public class Num implements Comparable<Num> {
 	// For example, if base=100, and the number stored corresponds to 10965,
 	// then the output is "100: 65 9 1"
 	public void printList() {
-
+		System.out.print(base+": ");
+		if(isNegative){
+			System.out.print("- ");
+		}
+		for (long x:arr){
+			System.out.print(x+" ");
+		}
 	}
 
 	// Return number to a string in base 10
