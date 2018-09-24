@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 public class Num implements Comparable<Num> {
 
 	static long defaultBase = 10; // Change as needed
-	long base = 5; // Change as needed
+	long base = 10; // Change as needed
 	long[] arr; // array to store arbitrarily large integers
 	boolean isNegative; // boolean flag to represent negative numbers
 	int len; // actual number of elements of array that are used; number is stored in
@@ -123,10 +123,10 @@ public class Num implements Comparable<Num> {
 		}
 	}
 
-	public Num(long[] x,long base){
+	public Num(long[] x,long base,int len){
 		arr=x;
 		this.base=base;
-		len=x.length;
+		this.len=len;
 	}
 
 	public Num(long x, long newBase) {
@@ -207,7 +207,12 @@ public class Num implements Comparable<Num> {
 			result.append("-");
 		}
 //		Num resultNum = new Num(result.reverse().toString());
-		Num resultNum=new Num(a.trimLeadingZeros(resultArr), a.base());
+        resultArr=a.trimLeadingZeros(resultArr);
+		int length=0;
+		for(long x:resultArr){
+		    length++;
+        }
+		Num resultNum=new Num(resultArr, a.base(),length);
 		if(a.isNegative==true&&b.isNegative==true){
 			//result.append("-");
 			resultNum.makeNegative();
@@ -292,7 +297,12 @@ public class Num implements Comparable<Num> {
 				}
 			}
 		}
-		Num res=new Num(resultArr,a.base());
+        resultArr=a.trimLeadingZeros(resultArr);
+        int length=0;
+        for(long x:resultArr){
+            length++;
+        }
+        Num res=new Num(resultArr, a.base(),length);
 		return res;
 //		return new Num(result.reverse().toString());
 	}
@@ -332,7 +342,12 @@ public class Num implements Comparable<Num> {
 			if(result[resIndex] != 0)
 				break;
 		}*/
-		Num res= new Num(a.trimLeadingZeros(result), a.base());
+        result=a.trimLeadingZeros(result);
+        int length=0;
+        for(long x:result){
+            length++;
+        }
+		Num res= new Num(result, a.base(),length);
 //		StringBuilder s = new StringBuilder();
 //		for (long x : result) {
 //			s.append(x);
@@ -362,30 +377,25 @@ public class Num implements Comparable<Num> {
 	// otherwise
 	// Use binary search to calculate a/b
 	public static Num divide(Num a, Num b) {
-		Num current = a.by2();
-		Num prod = product(current, b);
-		Num ans;
-		if (a.compareTo(b) < 0)
-			return new Num((long) 0);
-		else if (a.compareTo(b) == 0)
-			return new Num((long) 1);
-		else {
-			//if (a/2 * b) == number then a/2 is quotient
-			if (prod.compareTo(a) == 0) {
-				return new Num(current.toString());
-			}
-			//if (a/2 *b) > a then further divide a/2 in half * b and repeat
-			else if (prod.compareTo(a) > 0) {
-				divide(current, b);
-			}
-			//if (1/2 *b) < a then increment a/2 and divide till new a/2 *b !> a
-			else {
-				//implementation left
-			}
-		}
-
-		return null;
-	}
+        Num low = new Num("0");
+        Num high = new Num(a.toString());
+        Num mid;
+        while (low.compareTo(high) < 0) {
+            mid = add(low, high).by2();
+            Num c = product(b, mid);
+            int compareToRes = c.compareTo(a);
+            if (compareToRes == 0) {
+                return mid;
+            } else if (compareToRes == 1) {
+                high = mid;
+            } else if (subtract(a, c).compareTo(b) == -1) {
+                return mid;
+            } else {
+                low = mid;
+            }
+        }
+        return low;
+    }
 
 	// return a%b
 	public static Num mod(Num a, Num b) {
@@ -498,7 +508,7 @@ public class Num implements Comparable<Num> {
 			if(lngArr[leadingNonZeroIndex] != 0)
 				break;
 		}
-		if(leadingNonZeroIndex > 0) {
+		if(leadingNonZeroIndex >= 0) {
 			result = new long[leadingNonZeroIndex + 1];
 			for(int i=0;i<=leadingNonZeroIndex;i++) {
 				result[i] = lngArr[i];
@@ -677,7 +687,7 @@ public class Num implements Comparable<Num> {
 		//Num y = new Num(5);
 		//Num z = divide(x, y);
 		//System.out.println(z);
-
+        Num c=divide(new Num(37),new Num(3));
 		/*
 		 * Num x = new Num(2000); Num y = new Num("-67"); System.out.println(new
 		 * Num("1").compareTo(new Num("-1"))); Num z = Num.add(x, y);
