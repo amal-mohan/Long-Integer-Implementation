@@ -45,8 +45,10 @@ public class Num implements Comparable<Num> {
 		long[] tempArr = new long[strLen];
 		for(int i = strLen - 1; i >= 0 && strLen-1-i >=0 ; i--)
 			tempArr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
-
-		int cumLength = newBaseLength(strLen);
+		this.arr = tempArr;
+		this.len = tempArr.length;
+		ConvertBaseFirst((int)this.base());
+		/*int cumLength = newBaseLength(strLen);
         long[] ts = new long[cumLength + 10]; //assign accumulation array
         long[] cum = new long[cumLength + 10]; //assign the result array
         ts[0] = 1; //initialize array with number 1
@@ -99,7 +101,7 @@ public class Num implements Comparable<Num> {
 		this.arr = new long[this.len];
         for(int i=0; i<=nonZeroIndex; i++) {
 			this.arr[i] = cum[i];
-		}
+		}*/
 	}
 
 	public Num(long x) {
@@ -519,6 +521,18 @@ public class Num implements Comparable<Num> {
 		return result;
 	}
 
+	public Num ConvertBaseFirst(int newBase) {
+		Num sum = new Num("0");
+		sum.base = newBase;
+		Num baseInNewBase = new Num(10, newBase);
+		for(int i=this.getLen()-1;i>=0;i--) {
+			Num prodElm = product(sum, baseInNewBase);
+			Num arrElm = new Num(this.arr[i], newBase);
+			sum = add(prodElm, arrElm);
+		}
+		return sum;
+	}
+
 	// Return number equal to "this" number, in base=newBase
 	public Num convertBase(int newBase) {
 		Num sum = new Num("0");
@@ -702,7 +716,7 @@ public class Num implements Comparable<Num> {
 		//long [] a={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
 		//long []b={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
 		//Num s=product(new Num(a,5),new Num(b,5));
-		Num str = new Num("16");
+		Num str = new Num("2529374023740928349028390482093840923");
 		System.out.println(str.convertBase(10).toString());
 		System.out.println(str.toString());
 		Num str1 = new Num("1213500");
