@@ -321,6 +321,8 @@ public class Num implements Comparable<Num> {
 	// otherwise
 	// Use binary search to calculate a/b
 	public static Num divide(Num a, Num b) {
+	    if(b.compareTo(new Num(0)) == 0)
+	        throw new IllegalArgumentException("Division by zero");
         Num low = new Num("0");
         Num high = new Num(a.toString());
         Num mid;
