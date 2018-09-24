@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 public class Num implements Comparable<Num> {
 
 	static long defaultBase = 10; // Change as needed
-	long base = defaultBase; // Change as needed
+	long base = 5; // Change as needed
 	long[] arr; // array to store arbitrarily large integers
 	boolean isNegative; // boolean flag to represent negative numbers
 	int len; // actual number of elements of array that are used; number is stored in
@@ -45,11 +45,61 @@ public class Num implements Comparable<Num> {
 		long[] tempArr = new long[strLen];
 		for(int i = strLen - 1; i >= 0 && strLen-1-i >=0 ; i--)
 			tempArr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
-		this.len = this.base() == 10 ? strLen : newBaseLength(strLen);
-		if(this.len == strLen)
-			this.arr = tempArr;
-		else
-			this.arr = new long[this.len];
+
+		int cumLength = newBaseLength(strLen);
+        long[] ts = new long[cumLength + 10]; //assign accumulation array
+        long[] cum = new long[cumLength + 10]; //assign the result array
+        ts[0] = 1; //initialize array with number 1
+
+        //evaluate the output
+        for (int i = 0; i < strLen; i++) //for each input digit
+        {
+            for (int j = 0; j < cumLength; j++) //add the input digit
+            // times (base:to from^i) to the output cumulator
+            {
+				cum[j] += ts[j] * tempArr[i];
+                long temp = cum[j];
+                long rem = 0;
+                int ip = j;
+                do // fix up any remainders in base:to
+                {
+                    rem = temp / this.base();
+					cum[ip] = temp-rem*this.base(); ip++;
+					cum[ip] += rem;
+                    temp = cum[ip];
+                }
+                while (temp >=this.base());
+            }
+
+            //calculate the next power from^i) in base:to format
+            for (int j = 0; j < cumLength; j++)
+            {
+                ts[j] = ts[j] * 10;
+            }
+            for(int j=0;j<cumLength;j++) //check for any remainders
+            {
+                long temp = ts[j];
+                long rem = 0;
+                int ip = j;
+                do  //fix up any remainders
+                {
+                    rem = temp / this.base();
+                    ts[ip] = temp - rem * this.base(); ip++;
+                    ts[ip] += rem;
+                    temp = ts[ip];
+                }
+                while (temp >= this.base());
+            }
+        }
+        int nonZeroIndex  = cum.length-1;
+        while(nonZeroIndex>=0 && cum[nonZeroIndex]==0) {
+			nonZeroIndex--;
+		}
+		this.len = nonZeroIndex + 1;
+		this.arr = new long[this.len];
+        for(int i=0; i<=nonZeroIndex; i++) {
+			this.arr[i] = cum[i];
+		}
 	}
 
 	public Num(long x) {
@@ -85,7 +135,7 @@ public class Num implements Comparable<Num> {
 		this.len = 0;
 		if(x != 0) {
 			int index = 0;
-			while ((long) Math.pow(10, this.len) <= x)
+			while ((long) Math.pow(newBase, this.len) <= x)
 				this.len = this.len + 1;
 			this.arr = new long[this.len];
 			while (x != 0) {
@@ -105,7 +155,7 @@ public class Num implements Comparable<Num> {
 	}
 
 	public static Num add(Num a, Num b) {
-		int aIndex = 0, bIndex = 0;
+		/*int aIndex = 0, bIndex = 0;*/
 		int aLength = a.getLen(), bLength = b.getLen();
 		int minLength = aLength < bLength ? aLength : bLength;
 		int maxLength = aLength >= bLength ? aLength : bLength;
@@ -157,7 +207,7 @@ public class Num implements Comparable<Num> {
 			result.append("-");
 		}
 //		Num resultNum = new Num(result.reverse().toString());
-		Num resultNum=new Num(resultArr,a.base());
+		Num resultNum=new Num(a.trimLeadingZeros(resultArr), a.base());
 		if(a.isNegative==true&&b.isNegative==true){
 			//result.append("-");
 			resultNum.makeNegative();
@@ -277,7 +327,12 @@ public class Num implements Comparable<Num> {
 			}
 			counter++;
 		}
-		Num res=new Num(result,a.base());
+		/*int resIndex = 0;
+		for(;resIndex<result.length;resIndex++){
+			if(result[resIndex] != 0)
+				break;
+		}*/
+		Num res= new Num(a.trimLeadingZeros(result), a.base());
 //		StringBuilder s = new StringBuilder();
 //		for (long x : result) {
 //			s.append(x);
@@ -436,12 +491,33 @@ public class Num implements Comparable<Num> {
 		return base;
 	}
 
+	private long[] trimLeadingZeros(long[] lngArr) {
+		long[] result;
+		int leadingNonZeroIndex = lngArr.length-1;
+		for(;leadingNonZeroIndex>=0;leadingNonZeroIndex--) {
+			if(lngArr[leadingNonZeroIndex] != 0)
+				break;
+		}
+		if(leadingNonZeroIndex > 0) {
+			result = new long[leadingNonZeroIndex + 1];
+			for(int i=0;i<=leadingNonZeroIndex;i++) {
+				result[i] = lngArr[i];
+			}
+		}
+		else
+			result = new long[] {0};
+		return result;
+	}
+
 	// Return number equal to "this" number, in base=newBase
 	public Num convertBase(int newBase) {
 		Num sum = new Num("0");
+		sum.base = newBase;
 		Num baseInNewBase = new Num(this.base(), newBase);
-		for(int i=0;i<this.getLen();i++) {
-			sum = add(product(sum, baseInNewBase), new Num(this.arr[i], newBase));
+		for(int i=this.getLen()-1;i>=0;i--) {
+			Num prodElm = product(sum, baseInNewBase);
+			Num arrElm = new Num(this.arr[i], newBase);
+			sum = add(prodElm, arrElm);
 		}
 		return sum;
 	}
@@ -582,25 +658,25 @@ public class Num implements Comparable<Num> {
 	}
 
 	public void printMethod() {
-		Num x = new Num(" -0001000000000000000000");
+		/*Num x = new Num(" -0001000000000000000000");
 		Num y = new Num(1000000000);
 		System.out.println("Compare x and y");
 		System.out.println(x.compareTo(y));
 		System.out.println("ToString x and y");
 		System.out.println(x.toString());
 		System.out.println(y.toString());
-		System.out.println("By2 of x and y");
+		System.out.println("By2 of x and y");*/
 		Num z = new Num("1500");
 		System.out.println(z.convertBase(7).toString());
-		x.by2();
-		y.by2();
+		//x.by2();
+		//y.by2();
 	}
 
 	public static void main(String[] args) {
-		Num x = new Num(36);
-		Num y = new Num(5);
-		Num z = divide(x, y);
-		System.out.println(z);
+		//Num x = new Num(36);
+		//Num y = new Num(5);
+		//Num z = divide(x, y);
+		//System.out.println(z);
 
 		/*
 		 * Num x = new Num(2000); Num y = new Num("-67"); System.out.println(new
@@ -613,14 +689,22 @@ public class Num implements Comparable<Num> {
 		// product(new Num(40),new Num(40)).printMethod();
 		// Num res=new Num(0);
 		// squareRoot(new Num(82));
-		long [] a={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
-		long []b={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
-		Num s=product(new Num(a,5),new Num(b,5));
-		new Num("123").printMethod();
-		System.out.println("ds");
+		//long [] a={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
+		//long []b={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
+		//Num s=product(new Num(a,5),new Num(b,5));
+		Num str = new Num("16");
+		System.out.println(str.convertBase(10).toString());
+		System.out.println(str.toString());
+		Num str1 = new Num("1213500");
+		System.out.println(str1.toString());
+		System.out.println(add(str, str1).toString());
+		System.out.println(product(str, str1).toString());
+		/*System.out.println(new Num("10000000000000000000").toString());
+		System.out.println()*/
+		/*System.out.println("ds");
 		System.out.println(new Num(25).compareTo(new Num(81)));
 		product(new Num(40),new Num(40)).printMethod();
 		Num res=new Num(0);
-		squareRoot(new Num(82));
+		squareRoot(new Num(82));*/
 	}
 }
