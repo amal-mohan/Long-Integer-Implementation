@@ -2,6 +2,11 @@
 // Version 1.0 (8:00 PM, Wed, Sep 5).
 
 // Change following line to your NetId
+/*
+Nihal Abdulla PT - nxp171730
+Amal Mohan - axm179030
+
+ */
 package LongInt;
 
 import java.util.*;
@@ -12,16 +17,21 @@ import java.util.NoSuchElementException;
 public class Num implements Comparable<Num> {
 
 	static long defaultBase = 10; // Change as needed
-	long base = 10; // Change as needed
+	long base = 5; // Change as needed
 	long[] arr; // array to store arbitrarily large integers
 	boolean isNegative; // boolean flag to represent negative numbers
 	int len; // actual number of elements of array that are used; number is stored in
 				// arr[0..len-1]
 
+	//Constructor takes string as argument and convert to array of long in chosen base.
+	//The constructor checks if any letters are present in the input string
+	//Trims the string to remove any white spaces
+	//Checks if only zeros are present in the string. If so, returns an array with only one element, 0
+	//Stores the decimal value in a temp array. Calls the convertBase method to get the value in chosen base
 	public Num(String s) {
 		if(s == null || s == "")
 			throw new NoSuchElementException();
-		String pattern = "(-)?[a-zA-Z]";
+		String pattern = "[a-zA-Z]";
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(s);
 		if(m.find())
@@ -47,63 +57,13 @@ public class Num implements Comparable<Num> {
 			tempArr[strLen - 1 - i] = Long.parseLong(s.substring(i, i + 1));
 		this.arr = tempArr;
 		this.len = tempArr.length;
-		ConvertBaseFirst((int)this.base());
-		/*int cumLength = newBaseLength(strLen);
-        long[] ts = new long[cumLength + 10]; //assign accumulation array
-        long[] cum = new long[cumLength + 10]; //assign the result array
-        ts[0] = 1; //initialize array with number 1
-
-        //evaluate the output
-        for (int i = 0; i < strLen; i++) //for each input digit
-        {
-            for (int j = 0; j < cumLength; j++) //add the input digit
-            // times (base:to from^i) to the output cumulator
-            {
-				cum[j] += ts[j] * tempArr[i];
-                long temp = cum[j];
-                long rem = 0;
-                int ip = j;
-                do // fix up any remainders in base:to
-                {
-                    rem = temp / this.base();
-					cum[ip] = temp-rem*this.base(); ip++;
-					cum[ip] += rem;
-                    temp = cum[ip];
-                }
-                while (temp >=this.base());
-            }
-
-            //calculate the next power from^i) in base:to format
-            for (int j = 0; j < cumLength; j++)
-            {
-                ts[j] = ts[j] * 10;
-            }
-            for(int j=0;j<cumLength;j++) //check for any remainders
-            {
-                long temp = ts[j];
-                long rem = 0;
-                int ip = j;
-                do  //fix up any remainders
-                {
-                    rem = temp / this.base();
-                    ts[ip] = temp - rem * this.base(); ip++;
-                    ts[ip] += rem;
-                    temp = ts[ip];
-                }
-                while (temp >= this.base());
-            }
-        }
-        int nonZeroIndex  = cum.length-1;
-        while(nonZeroIndex>=0 && cum[nonZeroIndex]==0) {
-			nonZeroIndex--;
-		}
-		this.len = nonZeroIndex + 1;
-		this.arr = new long[this.len];
-        for(int i=0; i<=nonZeroIndex; i++) {
-			this.arr[i] = cum[i];
-		}*/
+		Num x = convertBaseFirst((int)this.base());
+		this.arr = x.getArr();
+		this.len = x.getLen();
 	}
 
+	//Constructor takes a long integer as argument and gives the object in chosen base.
+	//For 0 it outputs array with only one element, 0.
 	public Num(long x) {
 		this.isNegative = x < 0;
 		this.len = 0;
@@ -131,6 +91,8 @@ public class Num implements Comparable<Num> {
 		this.len=len;
 	}
 
+	//Constructor takes long integer and base as arguments and gives the object corresponding to the given base
+	//in the given base.
 	public Num(long x, long newBase) {
 		this.isNegative = x < 0;
 		this.base = newBase;
@@ -152,23 +114,21 @@ public class Num implements Comparable<Num> {
 		}
 	}
 
-	private int newBaseLength(int currLength) {
-		return (int)((currLength+1) * Math.log(10)/Math.log(this.base())) + 1;
-	}
-
+	//add method: static. takes two Num objects as arguments
+	//expects both the objects to be in the same base
+	//finds the sum of two numbers in the same base as that of operands
 	public static Num add(Num a, Num b) {
-		/*int aIndex = 0, bIndex = 0;*/
 		int aLength = a.getLen(), bLength = b.getLen();
 		int minLength = aLength < bLength ? aLength : bLength;
 		int maxLength = aLength >= bLength ? aLength : bLength;
-		long [] resultArr=new long[maxLength+1];
+		long [] resultArr = new long[maxLength+1];
 		StringBuilder result = new StringBuilder();
-		if(a.isNegative==true&&b.isNegative!=true){
-			Num c=new Num(a.toString());
-			c.isNegative=false;
+		if(a.isNegative && !b.isNegative){
+			Num c = new Num(a.toString());
+			c.isNegative = false;
 			return subtract(b,c);
 		}
-		else if(b.isNegative==true){
+		else if(b.isNegative){
 			Num c=new Num(b.toString());
 			c.isNegative=false;
 			return subtract(a,c);
@@ -178,34 +138,28 @@ public class Num implements Comparable<Num> {
 		long[] aArr = a.getArr();
 		long[] bArr = b.getArr();
 		while (j < minLength) {
-//			result.append((carry + aArr[j] + bArr[j]) % a.base());
-			resultArr[j]=(carry + aArr[j] + bArr[j]) % a.base();
+			resultArr[j] = (carry + aArr[j] + bArr[j]) % a.base();
 			carry = (carry + aArr[j] + bArr[j]) / a.base();
-			// resultArray[j] = (carry + a.arr[j] + b.arr[j]) % a.base;
-			// carry = resultArray[j] / a.base;
 			j++;
 		}
 		if (aLength > bLength) {
 			while (j < maxLength) {
-//				result.append((aArr[j] + carry) % a.base());
-				resultArr[j]=(a.arr[j]+carry)%a.base;
+				resultArr[j] = (a.arr[j]+carry)%a.base;
 				carry = ((aArr[j] + carry) % a.base()) / a.base();
 				j++;
 			}
 		}
 		if (aLength < bLength) {
 			while (j < maxLength) {
-				//result.append((bArr[j] + carry) % a.base());
-				resultArr[j]=(b.arr[j]+carry)%a.base;
+				resultArr[j] = (b.arr[j]+carry)%a.base;
 				carry = ((bArr[j] + carry) % a.base()) / a.base();
 				j++;
 			}
 		}
 		if (carry > 0) {
-			//result.append(carry);
-			resultArr[j]=carry;
+			resultArr[j] = carry;
 		}
-		if(a.isNegative==true&&b.isNegative==true){
+		if(a.isNegative && b.isNegative){
 			result.append("-");
 		}
 //		Num resultNum = new Num(result.reverse().toString());
@@ -521,8 +475,8 @@ public class Num implements Comparable<Num> {
 		return result;
 	}
 
-	public Num ConvertBaseFirst(int newBase) {
-		Num sum = new Num("0");
+	public Num convertBaseFirst(int newBase) {
+		Num sum = new Num(0);
 		sum.base = newBase;
 		Num baseInNewBase = new Num(10, newBase);
 		for(int i=this.getLen()-1;i>=0;i--) {
@@ -701,7 +655,7 @@ public class Num implements Comparable<Num> {
 		//Num y = new Num(5);
 		//Num z = divide(x, y);
 		//System.out.println(z);
-        Num c=divide(new Num(37),new Num(3));
+
 		/*
 		 * Num x = new Num(2000); Num y = new Num("-67"); System.out.println(new
 		 * Num("1").compareTo(new Num("-1"))); Num z = Num.add(x, y);
