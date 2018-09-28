@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 public class Num implements Comparable<Num> {
 
 	static long defaultBase = 10; // Change as needed
-	long base = 5; // Change as needed
+	long base = 10; // Change as needed
 	long[] arr; // array to store arbitrarily large integers
 	boolean isNegative; // boolean flag to represent negative numbers
 	int len; // actual number of elements of array that are used; number is stored in
@@ -223,29 +223,33 @@ public class Num implements Comparable<Num> {
 				resultArr[k++] = aArr[i] - bArr[i];
 			}
 		}
-		if (borrow) {
-			// handling cases of adding extra unnecessary leading zero(eg 100-9)
-			if (a.getLen() > b.getLen() + 1 || aArr[b.getLen()] > 1) {
-				if (aArr[b.getLen()] != 0) {
-					resultArr[k++] = aArr[b.getLen()] - 1;
-				} else {
-					resultArr[k++] = a.base();
-					borrow = true;
-				}
-				for (int i = b.getLen() + 1; i < a.getLen(); i++) {
+//		if (borrow) {
+//			// handling cases of adding extra unnecessary leading zero(eg 100-9)
+//			if (a.getLen() > b.getLen() + 1 || aArr[b.getLen()] > 1) {
+//				if (aArr[b.getLen()] != 0) {
+//					resultArr[k++] = aArr[b.getLen()] - 1;
+//				} else {
+//					resultArr[k++] = a.base();
+//					borrow = true;
+//				}
+				for (int i = b.getLen(); i < a.getLen(); i++) {
 					if (borrow) {
 						if (aArr[i] != 0) {
 							resultArr[k++] = aArr[i] - 1;
 							borrow = false;
 						} else {
-							resultArr[k++] = a.base();
+							resultArr[k++] = a.base()-1;
 						}
 					} else {
 						resultArr[k++] = aArr[i];
 					}
 				}
-			}
-		}
+//			}
+	//	}
+//		else
+  //      {
+    //
+     //   }
         resultArr = a.trimLeadingZeros(resultArr);
         int length=0;
         for(long x: resultArr){
@@ -636,6 +640,10 @@ public class Num implements Comparable<Num> {
 		//Num y = new Num(5);
 		//Num z = divide(x, y);
 		//System.out.println(z);
+		Num l=new Num("92");
+		Num k=new Num("93");
+        Num addi=subtract(k,l );
+        addi.printList();
 
 		/*
 		 * Num x = new Num(2000); Num y = new Num("-67"); System.out.println(new
