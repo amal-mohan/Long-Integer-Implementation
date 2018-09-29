@@ -358,6 +358,7 @@ public class Num implements Comparable<Num> {
 	// Use binary search
 	public static Num squareRoot(Num a) {
 		Num low = new Num("0");
+		//1912991252611125159670459142926165956543555293
 		Num  high = new Num(a.toString());
 		Num res = new Num("0");
 		Num midSquare;
@@ -549,8 +550,11 @@ public class Num implements Comparable<Num> {
 					break;
 				}
 			}
+			else {
+				operands.push(op);
+			}
 		}
-		if(operands.capacity() > 1) {
+		if(operands.size() > 1) {
 			return null;
 		}
 		return new Num(operands.pop());
@@ -640,9 +644,21 @@ public class Num implements Comparable<Num> {
 		//Num y = new Num(5);
 		//Num z = divide(x, y);
 		//System.out.println(z);
-		Num l=new Num("92");
-		Num k=new Num("93");
-        Num addi=subtract(k,l );
+		Num l2=new Num("3659535532566681673026857047264590495633096120170316011130546064934049533282760410899967541");
+		Num l3=l2.by2();
+		Num l4=product(l3,l3);
+		for(int i=l4.getLen()-1;i>=0;i--){
+			System.out.print(l4.arr[i]);
+		}
+
+		Num k2=squareRoot(l2);
+				//1912991252611125159670459142926165956543555293
+
+		Num l=new Num("934687900098779");
+		Num k=new Num("937656432400056789");
+		Num s=k.convertBase(8);
+		Num p=l.convertBase(8);
+        Num addi=subtract(k.convertBase(8),l.convertBase(8) );
         addi.printList();
 
 		/*
