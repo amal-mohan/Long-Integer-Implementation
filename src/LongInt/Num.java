@@ -146,7 +146,16 @@ public class Num implements Comparable<Num> {
 			Num c = new Num(a.toString());
 			c.isNegative = false;
 			return subtract(b, c);
-		} else if (b.isNegative) {
+		}else if (a.isNegative && b.isNegative){
+			Num c = new Num(a.toString());
+			c.isNegative = false;
+			Num d = new Num(b.toString());
+			d.isNegative = false;
+			Num res = add(c,d);
+			res.makeNegative();
+			return res;
+		}
+		else if (b.isNegative) {
 			Num c = new Num(b.toString());
 			c.isNegative = false;
 			return subtract(a, c);
@@ -573,5 +582,9 @@ public class Num implements Comparable<Num> {
 
 	public static void main(String[] args) {
 		System.out.println(new Num("-123123123232"));
+		Num x = new Num("-9");
+		Num y = new Num("4");
+		Num z = subtract(x, y);
+		System.out.println(z.toString());
 	}
 }
