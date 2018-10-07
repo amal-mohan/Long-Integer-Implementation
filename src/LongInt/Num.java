@@ -52,7 +52,7 @@ public class Num implements Comparable<Num> {
 	 * HashMap to store the precedence values of the different operators.
 	 * Used for evaluation of expressions
 	 */
-	static HashMap<String, Integer> precedenceMap = new HashMap<String, Integer>() {
+	static HashMap<String, Integer> precedenceMap = new HashMap<>() {
 		{
 			put("^", 1);
 			put("*", 2);
@@ -209,7 +209,7 @@ public class Num implements Comparable<Num> {
 			return subtract(b, c);
 		}
 		//using add of positive numbers and swapping sign when both numbers are negative
-		else if (a.isNegative && b.isNegative) {
+		else if (a.isNegative) {
 			Num c = new Num(a.getArr(),a.base());
 			c.isNegative = false;
 			Num d = new Num(b.getArr(),b.base());
@@ -339,8 +339,7 @@ public class Num implements Comparable<Num> {
 			}
 		}
 		resultArr = a.trimLeadingZeros(resultArr);
-		Num res = new Num(resultArr, a.base());
-		return res;
+		return new Num(resultArr, a.base());
 	}
 
 	/**
@@ -537,9 +536,6 @@ public class Num implements Comparable<Num> {
 		return res;
 	}
 
-	/**
-	 * Utility functions used
-	 */
 
 	/**
 	 * A helper method defined to compare the values of "this" to "other" and return
@@ -601,13 +597,13 @@ public class Num implements Comparable<Num> {
 	 * @return string containing the number in base 10
 	 */
     public String toString() {
-    	//initally number is converted to default base
+    	//initially number is converted to default base
         Num decimalNumber = this.convertToDefaultBase();
         StringBuilder sbResult = new StringBuilder();
         long temp;
         int digits = (int) Math.log10(base());
-        long count = 0;
-        long max = base - 1, zeros;
+        long count;
+        long zeros;
         //extracting each digit and appending to result by adding necessary zeros to from
         for (int i=decimalNumber.len-1;i>=0;i--){
             //first digit not not be checked to add leading zeros
@@ -682,9 +678,6 @@ public class Num implements Comparable<Num> {
 	 * @return Num object with value in the newBase
 	 */
 	public Num convertBase(long newBase) {
-		if(this.base==newBase){
-			return this;
-		}
 		Num sum = new Num(0,newBase);
 		Num baseInNewBase = new Num(10, newBase);
 		//using digits from the front and multiplying it with old base to covert to new base and adding to subsequent digits
@@ -714,7 +707,10 @@ public class Num implements Comparable<Num> {
      * @return Number equal to "this" number, in base = 1000000000L
      */
     public Num convertToDefaultBase() {
-        return convertBase(1000000000L);
+		if(this.base==defaultBase){
+			return this;
+		}
+		return convertBase(1000000000L);
     }
 
 	/**
