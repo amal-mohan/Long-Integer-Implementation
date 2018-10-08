@@ -724,7 +724,20 @@ public class Num implements Comparable<Num> {
 		if(this.base==defaultBase){
 			return this;
 		}
-		return convertBase(1000000000L);
+		Num sum = new Num(0);
+		long newBase=1000000000L;
+		sum.base = newBase;
+		Num baseInNewBase = new Num(base, newBase);
+		baseInNewBase.base = newBase;
+		for (int i = getLen() - 1; i >= 0; i--) {
+			Num prodElm = product(sum, baseInNewBase);
+			prodElm.base = newBase;
+			Num arrElm = new Num(this.arr[i], newBase);
+			arrElm.base = newBase;
+			sum = add(prodElm, arrElm);
+		}
+		sum.isNegative = this.isNegative;
+		return sum;
     }
 
 	/**
